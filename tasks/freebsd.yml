@@ -19,34 +19,34 @@
   register: zpool_available
   changed_when: False
   ignore_errors: True
-  when: '"{{ poudriere_zpool }}" != ""'
+  when: 'poudriere_zpool != ""'
 
 - name: zpool is configured in poudriere.conf when available
   lineinfile:
     line='ZPOOL="{{ poudriere_zpool }}"'
     dest=/usr/local/etc/poudriere.conf
-  when: '"{{ poudriere_zpool }}" != "" and zpool_available.rc == 0'
+  when: 'poudriere_zpool != "" and zpool_available.rc == 0'
 
 - name: git is installed when portsmethod is git
   pkgng:
     name=git
     state=present
-  when: '"{{ poudriere_portsmethod }}" == "git"'
+  when: 'poudriere_portsmethod == "git"'
 
 - name: subversion is installed when portsmethod is svn
   pkgng:
     name=subversion
     state=present
-  when: '"{{ poudriere_portsmethod }}" in ["svn", "svn+http", "svn+https", "svn+ssh"]'
+  when: 'poudriere_portsmethod in ["svn", "svn+http", "svn+https", "svn+ssh"]'
 
 - name: default ports for poudriere is initialized
   command: poudriere ports -c -p default -m "{{ poudriere_portsmethod }}"
   args:
     creates: /usr/local/poudriere/ports/default
-  when: '"{{ poudriere_portsmethod }}" != "none"'
+  when: 'poudriere_portsmethod != "none"'
 
 - name: builder jail is created
   command: poudriere jails -c -j "{{ poudriere_jail }}" -v "{{ poudriere_jailversion }}" -a amd64
   args:
     creates: '/usr/local/poudriere/jails/{{ poudriere_jail }}'
-  when: '"{{ poudriere_jail }}" != ""'
+  when: 'poudriere_jail != ""'
